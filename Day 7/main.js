@@ -5,9 +5,10 @@ var user_file = './Day 7/input_text.txt';
 let result = '';
 
 function main () {
-    let currDir = '/';
+    let currDir = '';
     let history = [];
     let sums = {};
+    let hash = 0;
 
     let r = readline.createInterface({
         input : fs.createReadStream(user_file)
@@ -20,26 +21,47 @@ function main () {
             sums[currDir] = 0;
         };
 
-        if (
-            input[0] === 'dir' ||
-            input[1] === 'ls'
-        ) { return };
+        // if (
+        //     input[0] === 'dir'
+        // ) {
+        //     sums[input[1]] = 0;
+        // }
+
+        console.log(history.join('/'));
+        console.log(input);
 
         // sum sizes
-        if (text[0] !== '$') {
+        if (input[0] !== '$') {
             let value = Number(input[0]);
             sums[currDir] += value;
             history.forEach(dir => sums[dir] += value);
             return;
         };
 
+        if (
+            input[1] === 'ls'
+        ) { return };
+
         // cd
-        if (input[2] === '..') {
-            currDir = history[history.length - 1];
-            history.pop();
-        } else {
-            history.push(currDir);
-            currDir = input[2];
+        switch (input[2]) {
+            case '..':
+                currDir = history[history.length - 1];
+                history.pop();
+                break;
+            case '/':
+                currDir = '/';
+                history = [];
+                break;
+            default:
+                if (
+                    Object.keys(sums).includes(input[2])
+                ) {
+                    console.log(`keys ${Object.keys(sums)}`);
+                    input[2] += hash;
+                    hash++;
+                }
+                history.push(currDir);
+                currDir = input[2];
         }
 
         // Puzzle 2
